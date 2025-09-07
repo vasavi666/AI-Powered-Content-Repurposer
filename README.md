@@ -29,7 +29,4 @@ Our **AI-Powered Content Repurposer** solves this by taking a single blog or tex
 - **Backend:** Node.js, Express.js  
 - **AI / NLP:** (Future scope: OpenAI / LLM integration)  
  
-
  
-git clone https://github.com/your-username/AI-Powered-Content-Repurposer.git
-cd AI-Powered-Content-Repurposer
