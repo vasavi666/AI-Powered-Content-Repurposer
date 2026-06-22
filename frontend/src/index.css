@@ -1,0 +1,28 @@
+ /* index.css */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Mixed bright gradient background */
+  background: linear-gradient(135deg, #ff6ec7, #ffa36c, #6ee7ff, #a8ff6c);
+  background-size: 300% 300%;
+  animation: gradientShift 10s ease infinite;
+
+  color: #1f2937;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
