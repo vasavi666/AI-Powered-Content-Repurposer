@@ -1,4 +1,4 @@
-  const express = require("express");
+ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const OpenAI = require("openai");
@@ -8,7 +8,29 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// Allowed frontend URLs
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://ai-powered-content-repurposer-v3yn.vercel.app",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (Postman, curl, etc.)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 // OpenAI client
@@ -21,45 +43,62 @@ app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
-// Repurpose route with AI
+// Repurpose route
 app.post("/api/repurpose", async (req, res) => {
   const { content } = req.body;
 
   if (!content) {
-    return res.status(400).json({ error: "No content provided" });
+    return res.status(400).json({
+      error: "No content provided",
+    });
   }
 
   try {
-    // Generate LinkedIn Post
+    // LinkedIn
     const linkedinRes = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: "You are an assistant that creates social media posts." },
-        { role: "user", content: `Turn this blog into a professional LinkedIn post:\n\n${content}` },
+        {
+          role: "system",
+          content: "You are an assistant that creates social media posts.",
+        },
+        {
+          role: "user",
+          content: `Turn this blog into a professional LinkedIn post:\n\n${content}`,
+        },
       ],
     });
 
-    // Generate Twitter Thread
+    // Twitter
     const twitterRes = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        { role: "user", content: `Summarize this into a Twitter thread (use multiple tweets):\n\n${content}` },
+        {
+          role: "user",
+          content: `Summarize this into a Twitter thread:\n\n${content}`,
+        },
       ],
     });
 
-    // Generate Instagram Caption
+    // Instagram
     const instaRes = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        { role: "user", content: `Make a short, catchy Instagram caption with hashtags:\n\n${content}` },
+        {
+          role: "user",
+          content: `Create an Instagram caption with hashtags:\n\n${content}`,
+        },
       ],
     });
 
-    // Generate YouTube Script
+    // YouTube
     const ytRes = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        { role: "user", content: `Convert this into a short engaging YouTube script intro:\n\n${content}` },
+        {
+          role: "user",
+          content: `Convert this into a YouTube intro script:\n\n${content}`,
+        },
       ],
     });
 
@@ -70,11 +109,15 @@ app.post("/api/repurpose", async (req, res) => {
       youtube: ytRes.choices[0].message.content,
     });
   } catch (error) {
-    console.error("OpenAI API Error:", error);
-    res.status(500).json({ error: "Failed to generate content" });
+    console.error("OpenAI Error:", error);
+
+    res.status(500).json({
+      error: "Failed to generate content",
+      details: error.message,
+    });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Backend running on http://localhost:${PORT}`);
+  console.log(`✅ Backend running on port ${PORT}`);
 });
