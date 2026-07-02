@@ -9,9 +9,12 @@ function ContentInput({ onResult }) {
     if (!text.trim()) return;
 
     try {
-      const response = await axios.post("http://localhost:5000/api/repurpose", {
-        content: text,
-      });
+     const response = await axios.post(
+  `${import.meta.env.VITE_API_URL}/api/repurpose`,
+  {
+    content: text,
+  }
+);
       onResult(response.data); // send result to parent
     } catch (error) {
       console.error("Error:", error);
